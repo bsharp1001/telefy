@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn telefy:'app'
+web: flask db upgrade; gunicorn telefy:app
