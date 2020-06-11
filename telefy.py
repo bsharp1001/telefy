@@ -1,6 +1,7 @@
 from pyrogram import Client, MessageHandler, Message
 import sqlite3
 from flask import Flask, render_template, request, g, redirect, url_for
+import os
 from os import path
 from flask_wtf import Form
 from wtforms import StringField
@@ -13,13 +14,20 @@ channelf = open("channel.txt")
 channel = channelf.readline().strip()
 channelf.close()
 
+user_app = Client(
+    "my_acc",
+    api_id=os.environ.get("api_id"),
+    api_hash=os.environ.get("api_hash")
+)
+user_app.start()
+
 bot_app = Client(
     "my_bot",
+    api_id=os.environ.get("api_id"),
+    api_hash=os.environ.get("api_hash"),
     bot_token="1195224941:AAGAypEBx3qyw1RMaaAzR-gNbQhexQa1XD4"
 )
 bot_app.start()
-user_app = Client("my_acc")
-user_app.start()
 
 
 if path.exists(DATABASE) == False:
@@ -31,7 +39,7 @@ if path.exists(DATABASE) == False:
 class UserChannelEmailNameForm(Form):
     user = StringField('Username', validators=[DataRequired()], _name="user")
     channel = StringField('Channel', validators=[DataRequired()], _name="channel")
-    email = StringField('Email', validators=[Email()], _name="email")
+    email = StringField('Email', validators=[], _name="email")
     name = StringField('Name', validators=[], _name="name")
 
 def get_db():
