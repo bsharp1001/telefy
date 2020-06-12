@@ -14,8 +14,8 @@ channelf = open("channel.txt","r")
 channel = channelf.readline().strip()
 channelf.close()
 keys = open("keys.txt","r")
-id_ = int(keys.readlines()[0].strip().replace("api_id=",""))
-hash_ = keys.readlines()[1].strip().replace("api_hash=","")
+id_ = int(keys.readline().strip().replace("api_id=",""))
+hash_ = keys.readline().strip().replace("api_hash=","")
 keys.close()
 
 user_app = Client(
