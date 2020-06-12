@@ -14,13 +14,13 @@ c.execute('CREATE TABLE IF NOT EXISTS users (username text PRIMARY KEY NOT NULL,
 db.commit()
 c.execute('CREATE TABLE IF NOT EXISTS keys (key text PRIMARY KEY NOT NULL, value text)')
 db.commit()
-c.execute('INSERT INTO keys (key, value) (%s,%s)',["api_id",id_])
+c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',("api_id",id_))
 db.commit()
-c.execute('INSERT INTO keys (key, value) (%s,%s)',["api_hash",hash_])
+c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',("api_hash",hash_))
 db.commit()
-c.execute('INSERT INTO keys (key, value) (%s,%s)',["bot_token",btoken])
+c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',("bot_token",btoken))
 db.commit()
-c.execute('INSERT INTO keys (key, value) (%s,%s)',["channel",channel])
+c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',("channel",channel))
 db.commit()
 
 user_app = Client(
