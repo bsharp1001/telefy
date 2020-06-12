@@ -79,7 +79,7 @@ bot_app.start()
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
-        cmd = "INSERT INTO users(username, chatid) VALUES (%s,%s) ON CONFLICT(username) DO UPDATE SET chatid=%s"
+        cmd = "INSERT INTO users(username, chatid) VALUES (%s,%s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
         username = mes.chat.username
         chatid = mes.chat.id
         res = query_db(cmd, [username, chatid, chatid], True)
@@ -98,12 +98,12 @@ def getNew(client, mes):
 announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
 
-def register_user(username, name = None, email = None):
+def register_user(username, name = "", email = ""):
     cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
     users = query_db("SELECT * FROM users")
     if res is not None and res[0] == username and res[3] is not None:
-        cmd = "UPDATE users SET (name = %s, email = %s) WHERE username = %s"
+        cmd = "UPDATE users SET name=%s, email=%s WHERE username = %s"
         res = query_db(cmd, [name, email, username])
         return redirect(url_for('dashboard',q=0))
     else:
