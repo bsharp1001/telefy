@@ -83,7 +83,7 @@ def on_confirm_messeage_recieve(client, mes):
         username = mes.chat.username
         chatid = mes.chat.id
         res = query_db(cmd, [username, chatid, chatid], True)
-        bot_app.send_message("861406121","hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
+        bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
 bot_app.add_handler(handlr)
@@ -134,7 +134,6 @@ def register():
     form = UserChannelEmailNameForm()
     if form.validate_on_submit():
         username = form.user.data.replace("@","")
-        print (username)
         name = form.name.data
         email = form.email.data
         return redirect(url_for('dashboard',q=str(register_user(username, name, email))))
