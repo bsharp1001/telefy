@@ -151,7 +151,7 @@ def login():
 
 @app.route('/dashboard/<q>')
 def dashboard(q):
-    if q == 1:
+    if q == 0:
         return render_template("dashboard.html", mes="Great! Everything done. Whenever new announcements are pulished on the channel specified, our bot will notify you.")
 
     return render_template("dashboard.html", mes="You signed up successfully but seems like you still didn't message our bot. Unfortunately, a bot can't open a chat on its own according to telegram rules. When you have a moment, be sure to send @ChannelGrabber_bot a message. To confirm your sent message, please login")
