@@ -93,8 +93,8 @@ def getNew(client, mes):
         users = query_db("SELECT * FROM users")
         if mes.chat.username == channel:
             for user in users:
-                print("user chat:", str(user[3]), "sdf: ", user[2])
-                bot_app.forward_messages(int(user[3]),channel,mes.message_id, as_copy=True)
+                if user[3] is not None:
+                    bot_app.forward_messages(int(),channel,mes.message_id, as_copy=True)
     
 announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
@@ -128,9 +128,6 @@ def close_connection(exception):
 
 @app.route('/')
 def enter():
-    users = query_db("SELECT * FROM users")
-    for user in users:
-        print (user)
     return redirect(url_for('register'))
 
 @app.route('/register', methods=['GET', 'POST'])
