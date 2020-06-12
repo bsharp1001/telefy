@@ -10,6 +10,9 @@ from wtforms.validators import DataRequired, Email, EqualTo
 DATABASE = os.environ.get('DATABASE_URL')
 
 app = Flask(__name__)
+app.config.from_mapping(
+        SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key'
+    )
 '''if path.exists(DATABASE) == False:
     db = psycopg2.connect(DATABASE)
     c = db.cursor()
