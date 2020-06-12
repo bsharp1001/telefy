@@ -57,22 +57,9 @@
                                     
                                     <small id="usernameHelp" class="form-text text-muted">We'll never share it</small>
                                 </div>
-                                <div class="form-group font-weight-bold">
-                                    <label for="Inputchannel">Channel*:</label>
-                                    <input type="text" name="channel" class="form-control no-rnd-crnrs shadows" id="Inputchannel"
-                                        aria-describedby="channelHelp" placeholder="@channelname" required>
-                                </div>
-                                <div class="form-group font-weight-bold text-center">
-                                    <button type="submit"
-                                        class="btn btn-primary font-weight-bold no-rnd-crnrs btn-clr-orange login-btn shadows">Check Feed</button>
-                                </div>
                             <hr>
-                            <h5 class="font-weight-bold loginCardHd text-left marginTop">
-                                Kindly Send A Message To Our Bot <span style="color: #00a0e0;">@ChannelGrabber_bot</span> So It Can Send You Notifications Later As Telegram Doesn't Allow Bots To Start A Chat. 
-                            </h5>
                             </div>
-
-                            <div id="moreinfo" style="display: none;">
+                            <div id="moreinfo">
                                 <div class="form-group font-weight-bold">
                                     <h5 class="font-weight-bold loginCardHd text-left marginTop">
                                         Would Be Nice To Know You More :)
@@ -94,10 +81,12 @@
                                 <hr>
                                 <div class="form-group font-weight-bold text-center">
                                     <button type="submit"
-                                        class="btn font-weight-bold no-rnd-crnrs btn-clr-green login-btn shadows"> Go To
-                                        Dashboard
-                                    </button>
+                                        class="btn btn-primary font-weight-bold no-rnd-crnrs btn-clr-orange login-btn shadows">Check Feed</button>
                                 </div>
+                                <hr>
+                                <h5 class="font-weight-bold loginCardHd text-left marginTop">
+                                    Kindly Send A Message To Our Bot <span style="color: #00a0e0;">@ChannelGrabber_bot</span> So It Can Send You Notifications Later As Telegram Doesn't Allow Bots To Start A Chat. 
+                                </h5>
                             </div>
                             {{ form.csrf_token }}
                         </form>
