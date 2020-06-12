@@ -133,7 +133,8 @@ def enter():
 def register():
     form = UserChannelEmailNameForm()
     if form.validate_on_submit():
-        username = form.user.data
+        username = form.user.data.replace("@","")
+        print (username)
         name = form.name.data
         email = form.email.data
         return redirect(url_for('dashboard',q=str(register_user(username, name, email))))
