@@ -26,7 +26,6 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = psycopg2.connect(DATABASE)
-        db.row_factory = psycopg2.Row
     return db
 
 def query_db(query, args=(), one=False):
@@ -78,7 +77,6 @@ def on_confirm_messeage_recieve(client, mes):
         username = mes.chat.username
         chatid = mes.chat.id
         res = query_db(cmd, (username, chatid, chatid), True)
-        query_db("SELECT * FROM users")
         bot_app.send_message("861406121","hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
@@ -89,7 +87,7 @@ def getNew(client, mes):
         users = query_db("SELECT * FROM users")
         if mes.chat.username == channel:
             for user in users:
-                bot_app.forward_messages(user["chatid"],channel,mes.message_id, as_copy=True)
+                bot_app.forward_messages(user[3],channel,mes.message_id, as_copy=True)
     
 announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
