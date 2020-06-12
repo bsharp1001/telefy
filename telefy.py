@@ -36,9 +36,11 @@ def query_db(query, args=(), one=False):
     cur = db.cursor()
     cur.execute(query, args)
     db.commit()
-    rv = cur.fetchone() if one else cur.fetchall() 
-    cur.close()
-    return rv
+    if cur.description is not None:
+        rv = cur.fetchone() if one else cur.fetchall() 
+        cur.close()
+        return rv
+    return None
 
 def startpy():
     with app.app_context():
