@@ -10,21 +10,25 @@ from wtforms.validators import DataRequired, Email, EqualTo
 DATABASE = 'users.db'
 app = Flask(__name__)
 
-channelf = open("channel.txt")
+channelf = open("channel.txt","r")
 channel = channelf.readline().strip()
 channelf.close()
+keys = open("keys.txt","r")
+id_ = int(keys.readlines()[0].strip().replace("api_id=",""))
+hash_ = keys.readlines()[1].strip().replace("api_hash=","")
+keys.close()
 
 user_app = Client(
     "my_acc",
-    api_id=os.environ.get("api_id"),
-    api_hash=os.environ.get("api_hash")
+    api_id=id_,
+    api_hash=hash_
 )
 user_app.start()
 
 bot_app = Client(
     "my_bot",
-    api_id=os.environ.get("api_id"),
-    api_hash=os.environ.get("api_hash"),
+    api_id=id_,
+    api_hash=hash_,
     bot_token="1195224941:AAGAypEBx3qyw1RMaaAzR-gNbQhexQa1XD4"
 )
 bot_app.start()
