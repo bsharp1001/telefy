@@ -13,7 +13,8 @@
 
 <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark shadowsNav">
-        <a class="navbar-brand Logo font-weight-bold" style="color: white; font-weight: bolder;" href="{{ url_for('enter') }}">
+        <a class="navbar-brand Logo font-weight-bold" style="color: white; font-weight: bolder;"
+            href="{{ url_for('enter') }}">
             Telefy
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -52,20 +53,23 @@
                                 </div>
                                 <div class="form-group font-weight-bold">
                                     <label for="Inputusername">Username*:</label>
-                                    <input type="text" name="user" class="form-control no-rnd-crnrs shadows" id="Inputusername"
-                                        aria-describedby="usernameHelp" placeholder="@yourusername" required>
-                                    
+                                    <input type="text" name="user" class="form-control no-rnd-crnrs shadows"
+                                        id="Inputusername" aria-describedby="usernameHelp" placeholder="@yourusername"
+                                        required>
+
                                     <small id="usernameHelp" class="form-text text-muted">We'll never share it</small>
                                 </div>
                                 <div class="form-group font-weight-bold text-center">
+
+                                    {{ form.csrf_token }}
                                     <button type="submit"
-                                        class="btn btn-primary font-weight-bold no-rnd-crnrs btn-clr-orange login-btn shadows">Check Feed</button>
+                                        class="btn btn-primary font-weight-bold no-rnd-crnrs btn-clr-orange login-btn shadows">Check
+                                        Feed</button>
                                     <!--<small id="emailHelp" class="btn form-text text-muted marginTop">Forgot
                                         Password?</small>-->
                                 </div>
-                            <hr>
+                                <hr>
                             </div>
-                            {{ form.csrf_token }}
                         </form>
 
                     </div>
