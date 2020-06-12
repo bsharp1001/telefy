@@ -135,6 +135,7 @@ def register():
         username = form.user
         name = form.name
         email = form.email
+        return redirect(url_for('dashboard',q=1))
         register_user(username, name, email)
 
     return render_template("register.html", form=form)
