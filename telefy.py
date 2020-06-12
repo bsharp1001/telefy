@@ -105,19 +105,19 @@ def register_user(username, name = "", email = ""):
     if res is not None and res[0] == username and res[3] is not None:
         cmd = "UPDATE users SET name=%s, email=%s WHERE username = %s"
         res = query_db(cmd, [name, email, username])
-        return redirect(url_for('dashboard',q=0))
+        return 0
     else:
         cmd = "INSERT INTO users (username, name, email) VALUES (%s,%s,%s)"
         res = query_db(cmd, [username, name, email])
-        return redirect(url_for('dashboard',q=1))
+        return 1
 
 def login_user(username, name = None, email = None):
     cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
     if res is not None and res[0] == username and res[3] is not None:
-        return redirect(url_for('dashboard',q=0))
+        return 0
     else:
-        return redirect(url_for('dashboard',q=1))
+        return 1
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -136,7 +136,7 @@ def register():
         username = form.user.data
         name = form.name.data
         email = form.email.data
-        register_user(username, name, email)
+        return redirect(url_for('dashboard',q=register_user(username, name, email)))
 
     return render_template("register.html", form=form)
 
@@ -145,7 +145,7 @@ def login():
     form = UserForm()
     if form.validate_on_submit():
         username = form.user.data
-        login_user(username)
+        return redirect(url_for('dashboard',q=login_user(username)))
 
     return render_template("login.html", form=form)
 
