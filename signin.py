@@ -14,13 +14,13 @@ c.execute('CREATE TABLE users (username text PRIMARY KEY NOT NULL, email text, n
 db.commit()
 c.execute('CREATE TABLE keys (key text PRIMARY KEY NOT NULL, value text)')
 db.commit()
-c.execute('INSERT INTO keys (key, value) (?,?)',["api_id",id_])
+c.execute('INSERT INTO keys (key, value) (%s,%s)',["api_id",id_])
 db.commit()
-c.execute('INSERT INTO keys (key, value) (?,?)',["api_hash",hash_])
+c.execute('INSERT INTO keys (key, value) (%s,%s)',["api_hash",hash_])
 db.commit()
-c.execute('INSERT INTO keys (key, value) (?,?)',["bot_token",btoken])
+c.execute('INSERT INTO keys (key, value) (%s,%s)',["bot_token",btoken])
 db.commit()
-c.execute('INSERT INTO keys (key, value) (?,?)',["channel",channel])
+c.execute('INSERT INTO keys (key, value) (%s,%s)',["channel",channel])
 db.commit()
 
 user_app = Client(
@@ -36,13 +36,13 @@ bot_app = Client(
 )
 
 bot_app.start()
-c.execute('INSERT INTO keys (key, value) (?,?)',["bot_session",bot_app.export_session_string()])
+c.execute('INSERT INTO keys (key, value) (%s,%s)',["bot_session",bot_app.export_session_string()])
 db.commit()
 bot_app.stop()
 
 user_app.start()
 user_app.authorize()
-c.execute('INSERT INTO keys (key, value) (?,?)',["user_session",user_app.export_session_string()])
+c.execute('INSERT INTO keys (key, value) (%s,%s)',["user_session",user_app.export_session_string()])
 db.commit()
 db.close()
 user_app.stop()

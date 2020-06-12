@@ -40,12 +40,12 @@ def query_db(query, args=(), one=False):
 
 def startpy():
     with app.app_context():
-        _channel = query_db("SELECT value FROM keys WHERE key = ?", ["channel"],True)
-        _id_ = query_db("SELECT value FROM keys WHERE key = ?", ["api_id"],True)
-        _hash_ = query_db("SELECT value FROM keys WHERE key = ?", ["api_hash"],True)
-        _btoken = query_db("SELECT value FROM keys WHERE key = ?", ["bot_token"],True)
-        _botstring = query_db("SELECT value FROM keys WHERE key = ?", ["bot_session"],True)
-        _userstring = query_db("SELECT value FROM keys WHERE key = ?", ["user_session"],True)
+        _channel = query_db("SELECT value FROM keys WHERE key = %s", ["channel"],True)
+        _id_ = int(query_db("SELECT value FROM keys WHERE key = %s", ["api_id"],True))
+        _hash_ = query_db("SELECT value FROM keys WHERE key = %s", ["api_hash"],True)
+        _btoken = query_db("SELECT value FROM keys WHERE key = %s", ["bot_token"],True)
+        _botstring = query_db("SELECT value FROM keys WHERE key = %s", ["bot_session"],True)
+        _userstring = query_db("SELECT value FROM keys WHERE key = %s", ["user_session"],True)
         
         return ["none", _channel,_id_,_hash_,_btoken,_botstring,_userstring]
 
@@ -74,7 +74,7 @@ bot_app.start()
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
-        cmd = "INSERT INTO users(username, chatid) VALUES(?,?) ON CONFLICT(username) DO UPDATE SET chatid=?"
+        cmd = "INSERT INTO users(username, chatid) VALUES(%s,%s) ON CONFLICT(username) DO UPDATE SET chatid=%s"
         username = mes.chat.username
         chatid = mes.chat.id
         res = query_db(cmd, [username, chatid, chatid], True)
@@ -95,20 +95,20 @@ announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
 
 def register_user(username, name = None, email = None):
-    cmd = "SELECT * FROM users WHERE username = ?"
+    cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
     users = query_db("SELECT * FROM users")
     if res is not None and res[0] == username and res['chatid'] is not None:
-        cmd = "UPDATE users SET (name = ?, email = ?) WHERE username = ?"
+        cmd = "UPDATE users SET (name = %s, email = %s) WHERE username = %s"
         res = query_db(cmd, [name, email, username])
         return redirect(url_for('dashboard',q=0))
     else:
-        cmd = "INSERT INTO users (username, name, email) (?,?,?)"
+        cmd = "INSERT INTO users (username, name, email) (%s,%s,%s)"
         res = query_db(cmd, [username, name, email])
         return redirect(url_for('dashboard',q=1))
 
 def login_user(username, name = None, email = None):
-    cmd = "SELECT * FROM users WHERE username = ?"
+    cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
     if res is not None and res[0] == username and res['chatid'] is not None:
         return redirect(url_for('dashboard',q=0))
