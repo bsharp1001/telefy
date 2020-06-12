@@ -16,20 +16,29 @@ channelf.close()
 keys = open("keys.txt","r")
 id_ = int(keys.readline().strip().replace("api_id=",""))
 hash_ = keys.readline().strip().replace("api_hash=","")
+btoken = keys.readline().strip().replace("bot_token=","")
 keys.close()
 
+botsf = open("botsession","r")
+botstring = botsf.read()
+botsf.close()
+
+usersf = open("usersession","r")
+userstring = usersf.read()
+usersf.close()
+
 user_app = Client(
-    "my_acc",
+    userstring,
     api_id=id_,
     api_hash=hash_
 )
 user_app.start()
 
 bot_app = Client(
-    "my_bot",
+    botstring,
     api_id=id_,
     api_hash=hash_,
-    bot_token="1195224941:AAGAypEBx3qyw1RMaaAzR-gNbQhexQa1XD4"
+    bot_token=btoken
 )
 bot_app.start()
 
@@ -61,7 +70,8 @@ def query_db(query, args=(), one=False):
     cur.close()
     return rv
 
-users = query_db("SELECT * FROM users")
+with app.app_context():
+    users = query_db("SELECT * FROM users")
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
