@@ -20,11 +20,12 @@ app.config.from_mapping(
     db.commit()'''
 
 class UserChannelEmailNameForm(Form):
-    user = StringField('Username', validators=[DataRequired()], _name="user")
-    channelw = StringField('Channel', validators=[DataRequired()], _name="channel")
-    email = StringField('Email', validators=[], _name="email")
-    name = StringField('Name', validators=[], _name="name")
+    user = StringField('Username*:', validators=[DataRequired()], _name="user")
+    email = StringField('Email:', validators=[], _name="email")
+    name = StringField('Full Name:', validators=[], _name="name")
 
+class UserForm(Form):
+    user = StringField('Username', validators=[DataRequired()], _name="user")
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -135,14 +136,13 @@ def register():
         username = form.user
         name = form.name
         email = form.email
-        return redirect(url_for('dashboard'))
         register_user(username, name, email)
 
     return render_template("register.html", form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = UserChannelEmailNameForm()
+    form = UserForm()
     if form.validate_on_submit():
         username = form.user
         login_user(username)
