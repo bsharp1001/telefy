@@ -1,5 +1,5 @@
 from pyrogram import Client, MessageHandler, Message
-import sqlite3
+import psycopg2
 from flask import Flask, render_template, request, g, redirect, url_for
 import os
 from os import path
@@ -7,25 +7,56 @@ from flask_wtf import Form
 from wtforms import StringField
 from wtforms.validators import DataRequired, Email, EqualTo
 
-DATABASE = 'users.db'
+DATABASE = os.environ.get('DATABASE_URL')
+
 app = Flask(__name__)
+'''if path.exists(DATABASE) == False:
+    db = psycopg2.connect(DATABASE)
+    c = db.cursor()
+    c.execute('CREATE TABLE users (username text PRIMARY KEY NOT NULL, email text, name text, chatid text)')
+    db.commit()'''
 
-channelf = open("channel.txt","r")
-channel = channelf.readline().strip()
-channelf.close()
-keys = open("keys.txt","r")
-id_ = int(keys.readline().strip().replace("api_id=",""))
-hash_ = keys.readline().strip().replace("api_hash=","")
-btoken = keys.readline().strip().replace("bot_token=","")
-keys.close()
+class UserChannelEmailNameForm(Form):
+    user = StringField('Username', validators=[DataRequired()], _name="user")
+    channelw = StringField('Channel', validators=[DataRequired()], _name="channel")
+    email = StringField('Email', validators=[], _name="email")
+    name = StringField('Name', validators=[], _name="name")
 
-botsf = open("botsession","r")
-botstring = botsf.read()
-botsf.close()
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = psycopg2.connect(DATABASE)
+        db.row_factory = psycopg2.Row
+    return db
 
-usersf = open("usersession","r")
-userstring = usersf.read()
-usersf.close()
+def query_db(query, args=(), one=False):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(query, args)
+    db.commit()
+    rv = cur.fetchone() if one else cur.fetchall() 
+    cur.close()
+    return rv
+
+def startpy():
+    with app.app_context():
+        _channel = query_db("SELECT value FROM keys WHERE key = ?", ["channel"],True)
+        _id_ = query_db("SELECT value FROM keys WHERE key = ?", ["api_id"],True)
+        _hash_ = query_db("SELECT value FROM keys WHERE key = ?", ["api_hash"],True)
+        _btoken = query_db("SELECT value FROM keys WHERE key = ?", ["bot_token"],True)
+        _botstring = query_db("SELECT value FROM keys WHERE key = ?", ["bot_session"],True)
+        _userstring = query_db("SELECT value FROM keys WHERE key = ?", ["user_session"],True)
+        
+        return ["none", _channel,_id_,_hash_,_btoken,_botstring,_userstring]
+
+
+data = startpy()
+channel = data[1]
+id_ = data[2]
+hash_ = data[3]
+btoken = data[4]
+botstring = data[5]
+userstring = data[6]
 
 user_app = Client(
     userstring,
@@ -33,7 +64,6 @@ user_app = Client(
     api_hash=hash_
 )
 user_app.start()
-
 bot_app = Client(
     botstring,
     api_id=id_,
@@ -41,37 +71,6 @@ bot_app = Client(
     bot_token=btoken
 )
 bot_app.start()
-
-
-if path.exists(DATABASE) == False:
-    db = sqlite3.connect(DATABASE)
-    c = db.cursor()
-    c.execute('CREATE TABLE users (username text PRIMARY KEY NOT NULL, email text, name text, chatid text)')
-    db.commit()
-
-class UserChannelEmailNameForm(Form):
-    user = StringField('Username', validators=[DataRequired()], _name="user")
-    channel = StringField('Channel', validators=[DataRequired()], _name="channel")
-    email = StringField('Email', validators=[], _name="email")
-    name = StringField('Name', validators=[], _name="name")
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
-    return db
-
-def query_db(query, args=(), one=False):
-    db = get_db()
-    cur = db.execute(query, args)
-    db.commit()
-    rv = cur.fetchone() if one else cur.fetchall() 
-    cur.close()
-    return rv
-
-with app.app_context():
-    users = query_db("SELECT * FROM users")
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
@@ -84,6 +83,16 @@ def on_confirm_messeage_recieve(client, mes):
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
 bot_app.add_handler(handlr)
+
+def getNew(client, mes):
+    with app.app_context():
+        users = query_db("SELECT * FROM users")
+        if mes.chat.username == channel:
+            for user in users:
+                bot_app.forward_messages(user["chatid"],channel,mes.message_id, as_copy=True)
+    
+announcement_handlr = MessageHandler(getNew)
+user_app.add_handler(announcement_handlr)
 
 def register_user(username, name = None, email = None):
     cmd = "SELECT * FROM users WHERE username = ?"
@@ -142,16 +151,3 @@ def dashboard(q):
         return render_template("dashboard.html", mes="Great! Everything done. Whenever new announcements are pulished on the channel specified, our bot will notify you.")
 
     return render_template("dashboard.html", mes="You signed up successfully but seems like you still didn't message our bot. Unfortunately, a bot can't open a chat on its own according to telegram rules. When you have a moment, be sure to send @ChannelGrabber_bot a message. To confirm your sent message, please login")
-
-def getNew():
-    update = user_app.get_history(channel,limit=1)
-    file_ = open("msg_id.txt", "r+")
-    lst_id = file_.readline().strip()
-    if lst_id != update.message_id:
-        file_.write(str(update.message_id))
-        file_.close()
-        for user in users:
-            bot_app.forward_messages(user["chatid"],channel,update.message_id)
-    
-announcement_handlr = MessageHandler(getNew)
-user_app.add_handler(announcement_handlr)
