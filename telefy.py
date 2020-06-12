@@ -102,7 +102,7 @@ def register_user(username, name = None, email = None):
     cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
     users = query_db("SELECT * FROM users")
-    if res is not None and res[0] == username and res['chatid'] is not None:
+    if res is not None and res[0] == username and res[3] is not None:
         cmd = "UPDATE users SET (name = %s, email = %s) WHERE username = %s"
         res = query_db(cmd, [name, email, username])
         return redirect(url_for('dashboard',q=0))
@@ -114,7 +114,7 @@ def register_user(username, name = None, email = None):
 def login_user(username, name = None, email = None):
     cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
-    if res is not None and res[0] == username and res['chatid'] is not None:
+    if res is not None and res[0] == username and res[3] is not None:
         return redirect(url_for('dashboard',q=0))
     else:
         return redirect(url_for('dashboard',q=1))
