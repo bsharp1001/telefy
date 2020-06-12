@@ -39,12 +39,12 @@ def query_db(query, args=(), one=False):
 
 def startpy():
     with app.app_context():
-        _channel = query_db("SELECT value FROM keys WHERE key = %s", ("channel"),True)
-        _id_ = int(query_db("SELECT value FROM keys WHERE key = %s", ("api_id"),True))
-        _hash_ = query_db("SELECT value FROM keys WHERE key = %s", ("api_hash"),True)
-        _btoken = query_db("SELECT value FROM keys WHERE key = %s", ("bot_token"),True)
-        _botstring = query_db("SELECT value FROM keys WHERE key = %s", ("bot_session"),True)
-        _userstring = query_db("SELECT value FROM keys WHERE key = %s", ("user_session"),True)
+        _channel = query_db("SELECT * FROM keys WHERE key = %s", ["channel"],True)[1]
+        _id_ = int(query_db("SELECT * FROM keys WHERE key = %s", ["api_id"],True)[1])
+        _hash_ = query_db("SELECT * FROM keys WHERE key = %s", ["api_hash"],True)[1]
+        _btoken = query_db("SELECT * FROM keys WHERE key = %s", ["bot_token"],True)[1]
+        _botstring = query_db("SELECT * FROM keys WHERE key = %s", ["bot_session"],True)[1]
+        _userstring = query_db("SELECT * FROM keys WHERE key = %s", ["user_session"],True)[1]
         
         return ["none", _channel,_id_,_hash_,_btoken,_botstring,_userstring]
 
@@ -76,7 +76,7 @@ def on_confirm_messeage_recieve(client, mes):
         cmd = "INSERT INTO users(username, chatid) VALUES (%s,%s) ON CONFLICT(username) DO UPDATE SET chatid=%s"
         username = mes.chat.username
         chatid = mes.chat.id
-        res = query_db(cmd, (username, chatid, chatid), True)
+        res = query_db(cmd, [username, chatid, chatid], True)
         bot_app.send_message("861406121","hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
@@ -94,7 +94,7 @@ user_app.add_handler(announcement_handlr)
 
 def register_user(username, name = None, email = None):
     cmd = "SELECT * FROM users WHERE username = %s"
-    res = query_db(cmd, (username), True)
+    res = query_db(cmd, [username], True)
     users = query_db("SELECT * FROM users")
     if res is not None and res[0] == username and res['chatid'] is not None:
         cmd = "UPDATE users SET (name = %s, email = %s) WHERE username = %s"
