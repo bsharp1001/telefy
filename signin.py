@@ -3,7 +3,7 @@ import os
 import psycopg2
 
 channel = input("channel :")
-id_ = int(input("api id :"))
+id_ = input("api id :")
 hash_ = input("api hash :")
 btoken = input("bot token :")
 
