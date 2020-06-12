@@ -36,13 +36,13 @@ bot_app = Client(
 )
 
 bot_app.start()
-c.execute('INSERT INTO keys (key, value) (%s,%s)',["bot_session",bot_app.export_session_string()])
+c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',["bot_session",bot_app.export_session_string()])
 db.commit()
 bot_app.stop()
 
 user_app.start()
 user_app.authorize()
-c.execute('INSERT INTO keys (key, value) (%s,%s)',["user_session",user_app.export_session_string()])
+c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',["user_session",user_app.export_session_string()])
 db.commit()
 db.close()
 user_app.stop()
