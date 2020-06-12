@@ -94,7 +94,7 @@ def getNew(client, mes):
         if mes.chat.username == channel:
             for user in users:
                 if user[3] is not None:
-                    bot_app.forward_messages(int(),channel,mes.message_id, as_copy=True)
+                    bot_app.forward_messages(int(user[3]),channel,mes.message_id, as_copy=True)
     
 announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
