@@ -133,9 +133,9 @@ def enter():
 def register():
     form = UserChannelEmailNameForm()
     if form.validate_on_submit():
-        username = form.user
-        name = form.name
-        email = form.email
+        username = form.user.data
+        name = form.name.data
+        email = form.email.data
         register_user(username, name, email)
 
     return render_template("register.html", form=form)
@@ -144,7 +144,7 @@ def register():
 def login():
     form = UserForm()
     if form.validate_on_submit():
-        username = form.user
+        username = form.user.data
         login_user(username)
 
     return render_template("login.html", form=form)
