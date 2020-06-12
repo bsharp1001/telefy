@@ -93,6 +93,7 @@ def getNew(client, mes):
         users = query_db("SELECT * FROM users")
         if mes.chat.username == channel:
             for user in users:
+                print("user chat:", str(user[3]), "sdf: ", user[2])
                 bot_app.forward_messages(int(user[3]),channel,mes.message_id, as_copy=True)
     
 announcement_handlr = MessageHandler(getNew)
