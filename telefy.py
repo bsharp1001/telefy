@@ -128,6 +128,9 @@ def close_connection(exception):
 
 @app.route('/')
 def enter():
+    users = query_db("SELECT * FROM users")
+    for user in users:
+        print (user)
     return redirect(url_for('register'))
 
 @app.route('/register', methods=['GET', 'POST'])
