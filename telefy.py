@@ -136,7 +136,7 @@ def register():
         username = form.user.data
         name = form.name.data
         email = form.email.data
-        return redirect(url_for('dashboard',q=register_user(username, name, email)))
+        return redirect(url_for('dashboard',q=str(register_user(username, name, email))))
 
     return render_template("register.html", form=form)
 
@@ -145,13 +145,13 @@ def login():
     form = UserForm()
     if form.validate_on_submit():
         username = form.user.data
-        return redirect(url_for('dashboard',q=login_user(username)))
+        return redirect(url_for('dashboard',q=str(login_user(username))))
 
     return render_template("login.html", form=form)
 
 @app.route('/dashboard/<q>')
 def dashboard(q):
-    if q == 0:
+    if q == "0":
         return render_template("dashboard.html", mes="Great! Everything done. Whenever new announcements are pulished on the channel specified, our bot will notify you.")
-
-    return render_template("dashboard.html", mes="You signed up successfully but seems like you still didn't message our bot. Unfortunately, a bot can't open a chat on its own according to telegram rules. When you have a moment, be sure to send @ChannelGrabber_bot a message. To confirm your sent message, please login")
+    else:
+        return render_template("dashboard.html", mes="You signed up successfully but seems like you still didn't message our bot. Unfortunately, a bot can't open a chat on its own according to telegram rules. When you have a moment, be sure to send @ChannelGrabber_bot a message. To confirm your sent message, please login")
