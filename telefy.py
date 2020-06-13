@@ -149,7 +149,7 @@ def on_confirm_messeage_recieve(client, mes):
             bot_app.send_message(int(chatid),"Goodbyes hve always been hard "+u'\U0001F97A'+". As you wish, you will stop receiving notifications from me")
             time.sleep(5)
             opt_out(username, chatid)
-        elif mes.text.find("info:") or mes.text.find("info") or mes.text.find("Info") or mes.text.find("Info:"):
+        elif mes.text.find("info:") != -1 or mes.text.find("info") != -1 or mes.text.find("Info") != -1 or mes.text.find("Info:") != -1:
             add_info(mes.text, chatid, username)
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
