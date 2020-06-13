@@ -132,10 +132,12 @@ def check_info(username, chatid):
         bot_app.send_message(int(chatid),"Perfect! it is always nice to know my friends better. You can add an email and/or a name. To add info follow the following form:\n\n info: \n email:email@example.com \n name:Joe Smith")
 
     elif email == "" and name != "":
-        bot_app.send_message(int(chatid),"Seems like You added a name but not an email. To add info follow the following form:\n\n info: \n name:Joe Smith")
+        bot_app.send_message(int(chatid),"Seems like You added a name but not an email. To it info follow the following form:\n\n info: \n name:Joe Smith")
 
     elif email != "" and name == "":
-        bot_app.send_message(int(chatid),"Seems like You added an email but not a name. To add info follow the following form:\n\n info: \n email:email@example.com")
+        bot_app.send_message(int(chatid),"Seems like You added an email but not a name. To add it follow the following form:\n\n info: \n email:email@example.com")
+    elif email != "" and name != "":
+        bot_app.send_message(int(chatid),"Seems like You added an email and name. To update your info follow the following form:\n\n info: \n email:email@example.com")
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
