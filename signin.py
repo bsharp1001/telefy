@@ -46,3 +46,4 @@ c.execute('INSERT INTO keys (key, value) VALUES (%s,%s)',["user_session",user_ap
 db.commit()
 db.close()
 user_app.stop()
+print("Success! Everything is set up. Enjoy!")

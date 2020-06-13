@@ -9,6 +9,7 @@ from wtforms import StringField
 from wtforms.validators import DataRequired, Email, EqualTo
 import threading
 import time
+import re
 
 def stayawake():
     while True:
@@ -85,28 +86,68 @@ bot_app = Client(
 bot_app.start()
 
 def opt_in(username, chatid):
-    cmd = "INSERT INTO users (username, chatid) VALUES (%s,%s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
-    res = query_db(cmd, [username, chatid, chatid], True)
+    cmd = "INSERT INTO users (username, chatid, email, name) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
+    res = query_db(cmd, [username, chatid, "", "", chatid], True)
     bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
 
-def opt_out():
+def opt_out(username):
+    cmd = "DELETE FROM users WHERE username=%s"
+    query_db(cmd, [username], True)
 
-def add_info():
-def check_info():
+def add_info(mes, chatid, username):
+    mes = str(mes).replace("info:","").replace("info","")
+    name = email = ""
+    if mes.find("email:") != -1 and mes.find("name:") != -1:
+        name = re.sub(r'email:\S+\s*','',mes).split("name:")[1].strip()
+        email = re.sub(r'name:\S+\s*','',mes).split("email:")[1].strip()
+    elif mes.find("email:") == -1 and mes.find("name:") != -1:
+        name = mes.split("name:")[1].strip()
+    elif mes.find("email:") != -1 and mes.find("name:") == -1:
+        email = mes.split("name:")[1].strip()
+
+    if re.match(r'[A-Z-z]{1,}', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
+        cmd = "UPDATE users SET name=%s, email=%s WHERE username = %s"
+        res = query_db(cmd, [name, email, username])
+        bot_app.send_message(int(chatid),"Nice! everything is added")
+
+    elif re.match(r'[A-Z-z]{1,}', name) is None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
+        cmd = "UPDATE users SET email=%s WHERE username = %s"
+        res = query_db(cmd, [email, username])
+        bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n name:Joe Smith")
+
+    elif re.match(r'[A-Z-z]{1,}', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is None:
+        cmd = "UPDATE users SET name=%s WHERE username = %s"
+        res = query_db(cmd, [name, username])
+        bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n email:email@example.com")
+
+def check_info(username, chatid):
+    users = query_db("SELECT * FROM users WHERE username = %s", [username], True)
+    email = users[1]
+    name = users[2]
+
+    if email == "" and name == "":
+        bot_app.send_message(int(chatid),"Perfect! it is always nice to know my friends better. You can add an email and/or a name. To add info follow the following form:\n\n info: \n email:email@example.com \n name:Joe Smith")
+
+    elif email == "" and name != "":
+        bot_app.send_message(int(chatid),"Seems like You added a name but not an email. To add info follow the following form:\n\n info: \n name:Joe Smith")
+
+    elif email != "" and name == "":
+        bot_app.send_message(int(chatid),"Seems like You added an email but not a name. To add info follow the following form:\n\n info: \n email:email@example.com")
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
         username = mes.chat.username
         chatid = mes.chat.id
         if mes.text == "/opt_in":
-            username = mes.chat.username
             opt_in(username, chatid)
         elif mes.text == "/add_info":
-            check_info()
-            bot_app.send_message(int(chatid),"")
+            check_info(username, chatid)
         elif mes.text == "/opt_out":
-            bot_app.send_message(int(chatid),"Goodbyes hve always been hard "+u'\U0001F601'+". As you wish, you will stop receiving notifications from me")
+            bot_app.send_message(int(chatid),"Goodbyes hve always been hard "+u'\U0001F97A'+". As you wish, you will stop receiving notifications from me")
+            time.sleep(5)
             opt_out(username)
+        elif mes.text.find("/info"):
+            add_info(mes.text, chatid, username)
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
 bot_app.add_handler(handlr)
@@ -122,7 +163,7 @@ def getNew(client, mes):
 announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
 
-def register_user(username, name = "", email = ""):
+'''def register_user(username, name = "", email = ""):
     cmd = "SELECT * FROM users WHERE username = %s"
     res = query_db(cmd, [username], True)
     users = query_db("SELECT * FROM users")
@@ -141,7 +182,7 @@ def login_user(username, name = None, email = None):
     if res is not None and res[0] == username and res[3] is not None:
         return 0
     else:
-        return 1
+        return 1'''
 
 @app.teardown_appcontext
 def close_connection(exception):
