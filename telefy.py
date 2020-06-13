@@ -88,7 +88,7 @@ bot_app.start()
 def opt_in(username, chatid):
     cmd = "INSERT INTO users (username, chatid, email, name) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
     res = query_db(cmd, [username, chatid, "", "", chatid], True)
-    bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
+    bot_app.send_message(int(chatid),"Great, a new friend. Always nice to have new friend, welcome. If you care to tell me more info about you type \n /add_info")
 
 def opt_out(username):
     cmd = "DELETE FROM users WHERE username=%s"
@@ -138,7 +138,7 @@ def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
         username = mes.chat.username
         chatid = mes.chat.id
-        if mes.text == "/opt_in":
+        if mes.text == "/start":
             opt_in(username, chatid)
         elif mes.text == "/add_info":
             check_info(username, chatid)
@@ -146,7 +146,7 @@ def on_confirm_messeage_recieve(client, mes):
             bot_app.send_message(int(chatid),"Goodbyes hve always been hard "+u'\U0001F97A'+". As you wish, you will stop receiving notifications from me")
             time.sleep(5)
             opt_out(username)
-        elif mes.text.find("/info"):
+        elif mes.text.find("info:"):
             add_info(mes.text, chatid, username)
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
