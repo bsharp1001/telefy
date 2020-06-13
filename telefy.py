@@ -100,8 +100,8 @@ def add_info(mes, chatid, username):
     mes = str(mes).replace("info:","").replace("info","").replace("Email","email").replace("Name","name")
     name = email = ""
     if mes.find("email:") != -1 and mes.find("name:") != -1:
-        name = re.sub(r'email:.+(?=[name]|$)','',mes).split("name:")[1].strip()
-        email = re.sub(r'name:.+(?=[email]|$)','',mes).split("email:")[1].strip()
+        name = re.sub(r'email:.+(?=name|$)','',mes,flags=re.MULTILINE).split("name:")[1].strip()
+        email = re.sub(r'name:.+(?=email|$)','',mes,flags=re.MULTILINE).split("email:")[1].strip()
     elif mes.find("email:") == -1 and mes.find("name:") != -1:
         name = mes.split("name:")[1].strip()
     elif mes.find("email:") != -1 and mes.find("name:") == -1:
