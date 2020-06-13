@@ -96,6 +96,7 @@ def opt_out(username):
     query_db(cmd, [username], True)
 
 def add_info(mes, chatid, username):
+    
     mes = str(mes).replace("info:","").replace("info","").replace("Email","email").replace("Name","name")
     name = email = ""
     if mes.find("email:") != -1 and mes.find("name:") != -1:
@@ -105,7 +106,7 @@ def add_info(mes, chatid, username):
         name = mes.split("name:")[1].strip()
     elif mes.find("email:") != -1 and mes.find("name:") == -1:
         email = mes.split("name:")[1].strip()
-
+    print("sdfsdafsaf")
     if re.match(r'[A-Z-z]{1,}', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
         cmd = "UPDATE users SET name=%s, email=%s WHERE username = %s"
         res = query_db(cmd, [name, email, username])
@@ -138,9 +139,6 @@ def check_info(username, chatid):
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
         username = mes.chat.username
-        print(mes.text)
-        if mes.text.find("info:") != -1:
-            print("yes")
         if username is None:
             username = "no username"
         chatid = mes.chat.id
@@ -153,6 +151,7 @@ def on_confirm_messeage_recieve(client, mes):
             time.sleep(5)
             opt_out(username, chatid)
         elif mes.text.find("info:") != -1 or mes.text.find("info") != -1 or mes.text.find("Info") != -1 or mes.text.find("Info:") != -1:
+            print("yes")
             add_info(mes.text, chatid, username)
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
