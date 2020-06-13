@@ -136,7 +136,6 @@ def check_info(username, chatid):
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
-        print(mes)
         username = mes.chat.username
         chatid = mes.chat.id
         if mes.text == "/start":
