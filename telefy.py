@@ -1,11 +1,11 @@
 from pyrogram import Client, MessageHandler, Message
 import psycopg2
-from flask import Flask, render_template, request, g, redirect, url_for
+'''from flask import Flask, render_template, request, g, redirect, url_for'''
 import os
 from os import path
-from flask_wtf import Form
+'''from flask_wtf import Form
 from wtforms import StringField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms.validators import DataRequired, Email, EqualTo'''
 
 DATABASE = os.environ.get('DATABASE_URL')
 
@@ -23,7 +23,7 @@ class UserForm(Form):
     user = StringField('Username', validators=[DataRequired()], _name="user")'''
 
 def get_db():
-    db = g._database = psycopg2.connect(DATABASE)
+    db = psycopg2.connect(DATABASE)
     return db
 
 def query_db(query, args=(), one=False):
