@@ -86,6 +86,7 @@ bot_app = Client(
 bot_app.start()
 
 def opt_in(username, chatid):
+    
     cmd = "INSERT INTO users (username, chatid, email, name) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
     res = query_db(cmd, [username, chatid, "", "", chatid], True)
     bot_app.send_message(int(chatid),"Great, a new friend. Always nice to have new friend, welcome. If you care to tell me more info about you type \n /add_info")
@@ -137,6 +138,9 @@ def check_info(username, chatid):
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
         username = mes.chat.username
+        if username is None:
+            username = "no username"
+        print(username)
         chatid = mes.chat.id
         if mes.text == "/start":
             opt_in(username, chatid)
@@ -145,7 +149,7 @@ def on_confirm_messeage_recieve(client, mes):
         elif mes.text == "/opt_out":
             bot_app.send_message(int(chatid),"Goodbyes hve always been hard "+u'\U0001F97A'+". As you wish, you will stop receiving notifications from me")
             time.sleep(5)
-            opt_out(username)
+            opt_out(username, chatid)
         elif mes.text.find("info:"):
             add_info(mes.text, chatid, username)
 
