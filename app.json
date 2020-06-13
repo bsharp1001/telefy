@@ -17,6 +17,9 @@
   "addons": [
     {
       "plan": "heroku-postgresql"
+    },
+    {
+      "plan": "scheduler"
     }
   ]
 }
