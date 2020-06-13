@@ -124,6 +124,10 @@ def add_info(mes, chatid, username):
 
 def check_info(username, chatid):
     users = query_db("SELECT * FROM users WHERE chatid = %s", [chatid], True)
+    
+    if len(users) < 1:
+        bot_app.send_message(int(chatid),"Looks like you signed out of the service. Please type /start agin to re-apply first and become  friend again")
+
     email = users[1]
     name = users[2]
 
