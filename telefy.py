@@ -3,9 +3,18 @@ import psycopg2
 from flask import Flask, render_template, request, g, redirect, url_for
 import os
 from os import path
+import requests
 from flask_wtf import Form
 from wtforms import StringField
 from wtforms.validators import DataRequired, Email, EqualTo
+import threading
+import time
+
+def stayawake():
+    while True:
+        time.sleep(60)
+        if os.environ.get("app_url",None) is not None:
+            requests.get(os.environ.get("app_url"))
 
 DATABASE = os.environ.get('DATABASE_URL')
 
