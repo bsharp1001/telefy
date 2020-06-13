@@ -96,7 +96,7 @@ def opt_out(username):
     query_db(cmd, [username], True)
 
 def add_info(mes, chatid, username):
-    mes = str(mes).replace("info:","").replace("info","")
+    mes = str(mes).replace("info:","").replace("info","").replace("Email","email").replace("Name","name")
     name = email = ""
     if mes.find("email:") != -1 and mes.find("name:") != -1:
         name = re.sub(r'email:\S+\s*','',mes).split("name:")[1].strip()
@@ -140,7 +140,6 @@ def on_confirm_messeage_recieve(client, mes):
         username = mes.chat.username
         if username is None:
             username = "no username"
-        print(username)
         chatid = mes.chat.id
         if mes.text == "/start":
             opt_in(username, chatid)
