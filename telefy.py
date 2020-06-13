@@ -91,40 +91,40 @@ def opt_in(username, chatid):
     res = query_db(cmd, [username, chatid, "", "", chatid], True)
     bot_app.send_message(int(chatid),"Great, a new friend. Always nice to have new friend, welcome. If you care to tell me more info about you type \n /add_info")
 
-def opt_out(username):
-    cmd = "DELETE FROM users WHERE username=%s"
-    query_db(cmd, [username], True)
+def opt_out(username, chatid):
+    cmd = "DELETE FROM users WHERE chatid=%s"
+    query_db(cmd, [chatid], True)
 
 def add_info(mes, chatid, username):
     
     mes = str(mes).replace("info:","").replace("info","").replace("Email","email").replace("Name","name")
     name = email = ""
     if mes.find("email:") != -1 and mes.find("name:") != -1:
-        name = re.sub(r'email:\S+\s*','',mes).split("name:")[1].strip()
-        email = re.sub(r'name:\S+\s*','',mes).split("email:")[1].strip()
+        name = re.sub(r'email:\S+\s*(?=name|$)','',mes).split("name:")[1].strip()
+        email = re.sub(r'name:\S+\s*(?=email|$)','',mes).split("email:")[1].strip()
     elif mes.find("email:") == -1 and mes.find("name:") != -1:
         name = mes.split("name:")[1].strip()
     elif mes.find("email:") != -1 and mes.find("name:") == -1:
         email = mes.split("name:")[1].strip()
     print(name,"\n",email)
-    if re.match(r'[A-Z-z]{1,}', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
+    if re.match(r'\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
         print("not none")
-        cmd = "UPDATE users SET name=%s, email=%s WHERE username = %s"
-        res = query_db(cmd, [name, email, username])
+        cmd = "UPDATE users SET name=%s, email=%s WHERE chatid = %s"
+        res = query_db(cmd, [name, email, chatid])
         bot_app.send_message(int(chatid),"Nice! everything is added")
 
-    elif re.match(r'[A-Z-z]{1,}', name) is None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
-        cmd = "UPDATE users SET email=%s WHERE username = %s"
-        res = query_db(cmd, [email, username])
+    elif re.match(r'\s*[A-Z-z]{1,}\s*', name) is None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
+        cmd = "UPDATE users SET email=%s WHERE chatid = %s"
+        res = query_db(cmd, [email, chatid])
         bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n name:Joe Smith")
 
-    elif re.match(r'[A-Z-z]{1,}', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is None:
-        cmd = "UPDATE users SET name=%s WHERE username = %s"
-        res = query_db(cmd, [name, username])
+    elif re.match(r'\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is None:
+        cmd = "UPDATE users SET name=%s WHERE chatid = %s"
+        res = query_db(cmd, [name, chatid])
         bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n email:email@example.com")
 
 def check_info(username, chatid):
-    users = query_db("SELECT * FROM users WHERE username = %s", [username], True)
+    users = query_db("SELECT * FROM users WHERE chatid = %s", [chatid], True)
     email = users[1]
     name = users[2]
 
@@ -152,7 +152,6 @@ def on_confirm_messeage_recieve(client, mes):
             time.sleep(5)
             opt_out(username, chatid)
         elif mes.text.find("info:") != -1 or mes.text.find("info") != -1 or mes.text.find("Info") != -1 or mes.text.find("Info:") != -1:
-            print("yes")
             add_info(mes.text, chatid, username)
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
