@@ -1,1 +1,1 @@
-web: python3 telefy.py
+web: gunicorn telefy:app

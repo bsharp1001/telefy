@@ -1,18 +1,23 @@
 from pyrogram import Client, MessageHandler, Message
 import psycopg2
-'''from flask import Flask, render_template, request, g, redirect, url_for'''
+from flask import Flask, render_template, request, g, redirect, url_for
 import os
 from os import path
-'''from flask_wtf import Form
+from flask_wtf import Form
 from wtforms import StringField
-from wtforms.validators import DataRequired, Email, EqualTo'''
+from wtforms.validators import DataRequired, Email, EqualTo
 
 DATABASE = os.environ.get('DATABASE_URL')
 
-'''app = Flask(__name__)
+app = Flask(__name__)
 app.config.from_mapping(
         SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key'
     )
+'''if path.exists(DATABASE) == False:
+    db = psycopg2.connect(DATABASE)
+    c = db.cursor()
+    c.execute('CREATE TABLE users (username text PRIMARY KEY NOT NULL, email text, name text, chatid text)')
+    db.commit()'''
 
 class UserChannelEmailNameForm(Form):
     user = StringField('Username*:', validators=[DataRequired()], _name="user")
@@ -20,10 +25,11 @@ class UserChannelEmailNameForm(Form):
     name = StringField('Full Name:', validators=[], _name="name")
 
 class UserForm(Form):
-    user = StringField('Username', validators=[DataRequired()], _name="user")'''
-
+    user = StringField('Username', validators=[DataRequired()], _name="user")
 def get_db():
-    db = psycopg2.connect(DATABASE)
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = psycopg2.connect(DATABASE)
     return db
 
 def query_db(query, args=(), one=False):
@@ -38,14 +44,15 @@ def query_db(query, args=(), one=False):
     return None
 
 def startpy():
-    _channel = query_db("SELECT * FROM keys WHERE key = %s", ["channel"],True)[1]
-    _id_ = int(query_db("SELECT * FROM keys WHERE key = %s", ["api_id"],True)[1])
-    _hash_ = query_db("SELECT * FROM keys WHERE key = %s", ["api_hash"],True)[1]
-    _btoken = query_db("SELECT * FROM keys WHERE key = %s", ["bot_token"],True)[1]
-    _botstring = query_db("SELECT * FROM keys WHERE key = %s", ["bot_session"],True)[1]
-    _userstring = query_db("SELECT * FROM keys WHERE key = %s", ["user_session"],True)[1]
-    
-    return ["none", _channel,_id_,_hash_,_btoken,_botstring,_userstring]
+    with app.app_context():
+        _channel = query_db("SELECT * FROM keys WHERE key = %s", ["channel"],True)[1]
+        _id_ = int(query_db("SELECT * FROM keys WHERE key = %s", ["api_id"],True)[1])
+        _hash_ = query_db("SELECT * FROM keys WHERE key = %s", ["api_hash"],True)[1]
+        _btoken = query_db("SELECT * FROM keys WHERE key = %s", ["bot_token"],True)[1]
+        _botstring = query_db("SELECT * FROM keys WHERE key = %s", ["bot_session"],True)[1]
+        _userstring = query_db("SELECT * FROM keys WHERE key = %s", ["user_session"],True)[1]
+        
+        return ["none", _channel,_id_,_hash_,_btoken,_botstring,_userstring]
 
 
 data = startpy()
@@ -71,21 +78,23 @@ bot_app = Client(
 bot_app.start()
 
 def on_confirm_messeage_recieve(client, mes):
-    cmd = "INSERT INTO users (username, chatid) VALUES (%s,%s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
-    username = mes.chat.username
-    chatid = mes.chat.id
-    res = query_db(cmd, [username, chatid, chatid], True)
-    bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
+    with app.app_context():
+        cmd = "INSERT INTO users (username, chatid) VALUES (%s,%s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
+        username = mes.chat.username
+        chatid = mes.chat.id
+        res = query_db(cmd, [username, chatid, chatid], True)
+        bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
 bot_app.add_handler(handlr)
 
 def getNew(client, mes):
-    users = query_db("SELECT * FROM users")
-    if mes.chat.username == channel:
-        for user in users:
-            if user[3] is not None:
-                bot_app.forward_messages(int(user[3]),channel,mes.message_id, as_copy=True)
+    with app.app_context():
+        users = query_db("SELECT * FROM users")
+        if mes.chat.username == channel:
+            for user in users:
+                if user[3] is not None:
+                    bot_app.forward_messages(int(user[3]),channel,mes.message_id, as_copy=True)
     
 announcement_handlr = MessageHandler(getNew)
 user_app.add_handler(announcement_handlr)
@@ -111,7 +120,7 @@ def login_user(username, name = None, email = None):
     else:
         return 1
 
-'''@app.teardown_appcontext
+@app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
@@ -123,6 +132,7 @@ def enter():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    
     form = UserChannelEmailNameForm()
     if form.validate_on_submit():
         username = form.user.data.replace("@","")
@@ -147,4 +157,3 @@ def dashboard(q):
         return render_template("dashboard.html", mes="Great! Everything done. Whenever new announcements are pulished on the channel specified, our bot will notify you.")
     else:
         return render_template("dashboard.html", mes="You signed up successfully but seems like you still didn't message our bot. Unfortunately, a bot can't open a chat on its own according to telegram rules. When you have a moment, be sure to send @ChannelGrabber_bot a message. To confirm your sent message, please login")
-'''
