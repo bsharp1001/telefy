@@ -3,22 +3,11 @@ import psycopg2
 from flask import Flask, render_template, request, g, redirect, url_for, abort
 import os
 from os import path
-import urllib.request as req
 from flask_wtf import Form
 from wtforms import StringField
 from wtforms.validators import DataRequired, Email, EqualTo
-import threading
 import time
 import re
-
-def stayawake():
-    while True:
-        time.sleep(60)
-        if os.environ.get("app_url",None) is not None:
-            req.urlopen(os.environ.get("app_url"))
-
-keepup = threading.Thread(target=stayawake,daemon=True)
-keepup.start()
 
 DATABASE = os.environ.get('DATABASE_URL')
 
