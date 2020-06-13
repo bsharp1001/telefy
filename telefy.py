@@ -107,18 +107,18 @@ def add_info(mes, chatid, username):
     elif mes.find("email:") != -1 and mes.find("name:") == -1:
         email = mes.split("name:")[1].strip()
     print(name,"\nsplit\n",email)
-    if re.match(r'\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
+    if re.match(r'\s*[A-Z-z]{1,}\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
         print("not none")
         cmd = "UPDATE users SET name=%s, email=%s WHERE chatid = %s"
         res = query_db(cmd, [name, email, chatid])
         bot_app.send_message(int(chatid),"Nice! everything is added")
 
-    elif re.match(r'\s*[A-Z-z]{1,}\s*', name) is None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
+    elif re.match(r'\s*[A-Z-z]{1,}\s*[A-Z-z]{1,}\s*', name) is None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
         cmd = "UPDATE users SET email=%s WHERE chatid = %s"
         res = query_db(cmd, [email, chatid])
         bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n name:Joe Smith")
 
-    elif re.match(r'\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is None:
+    elif re.match(r'\s*[A-Z-z]{1,}\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is None:
         cmd = "UPDATE users SET name=%s WHERE chatid = %s"
         res = query_db(cmd, [name, chatid])
         bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n email:email@example.com")
