@@ -115,13 +115,18 @@ def add_info(mes, chatid, username):
     elif re.match(r'\s*[A-Za-z]{1,}\s*[A-Za-z]*\s*', name) is None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
         cmd = "UPDATE users SET email=%s WHERE chatid = %s"
         res = query_db(cmd, [email, chatid])
-        bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n name:Joe Smith")
+        if name != "":
+            bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n name:Joe Smith")
+        else:
+            bot_app.send_message(int(chatid),"Okay, your email is added")
 
     elif re.match(r'\s*[A-Za-z]{1,}\s*[A-Za-z]*\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is None:
         cmd = "UPDATE users SET name=%s WHERE chatid = %s"
         res = query_db(cmd, [name, chatid])
-        bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n email:email@example.com")
-
+        if email != "":
+            bot_app.send_message(int(chatid),"Seems like something is wrong with the name form. To add it right follow the following form:\n\n info: \n email:email@example.com")
+        else:
+            bot_app.send_message(int(chatid),"Okay, your name is added")
 def check_info(username, chatid):
     users = query_db("SELECT * FROM users WHERE chatid = %s", [chatid], True)
     
