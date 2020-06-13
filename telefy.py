@@ -106,7 +106,8 @@ def add_info(mes, chatid, username):
         name = mes.split("name:")[1].strip()
     elif mes.find("email:") != -1 and mes.find("name:") == -1:
         email = mes.split("name:")[1].strip()
-    print(name,"\nsplit\n",email)
+    print("emial:",email.replace("\n", "##"))
+    print("name:",name.replace("\n", "##"))
     if re.match(r'\s*[A-Z-z]{1,}\s*[A-Z-z]{1,}\s*', name) is not None and re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email) is not None:
         print("not none")
         cmd = "UPDATE users SET name=%s, email=%s WHERE chatid = %s"
