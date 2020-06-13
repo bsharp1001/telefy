@@ -138,6 +138,7 @@ def check_info(username, chatid):
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
         username = mes.chat.username
+        print(mes.text)
         if username is None:
             username = "no username"
         chatid = mes.chat.id
