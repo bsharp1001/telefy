@@ -16,7 +16,8 @@ def stayawake():
         if os.environ.get("app_url",None) is not None:
             req.urlopen(os.environ.get("app_url"))
 
-threading.Thread(target=stayawake,daemon=True)
+keepup = threading.Thread(target=stayawake,daemon=True)
+keepup.start()
 
 DATABASE = os.environ.get('DATABASE_URL')
 
