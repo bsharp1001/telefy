@@ -100,8 +100,8 @@ def add_info(mes, chatid, username):
     mes = str(mes).replace("info:","").replace("info","").replace("Email","email").replace("Name","name")
     name = email = ""
     if mes.find("email:") != -1 and mes.find("name:") != -1:
-        name = re.sub(r'email:\s*\S+\s+(?=name|$)','',mes).split("name:")[1].strip()
-        email = re.sub(r'name:\s*\S+\s+(?=email|$)','',mes).split("email:")[1].strip()
+        name = re.sub(r'email:\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+(?=name|$)','',mes).split("name:")[1].strip()
+        email = re.sub(r'name:\s*[A-Z-z]{1,}\s*[A-Z-z]{1,}\s*(?=email|$)','',mes).split("email:")[1].strip()
     elif mes.find("email:") == -1 and mes.find("name:") != -1:
         name = mes.split("name:")[1].strip()
     elif mes.find("email:") != -1 and mes.find("name:") == -1:
@@ -129,15 +129,15 @@ def check_info(username, chatid):
     name = users[2]
 
     if email == "" and name == "":
-        bot_app.send_message(int(chatid),"Perfect! it is always nice to know my friends better. You can add an email and/or a name. To add info follow the following form:\n\n info: \n email:email@example.com \n name:Joe Smith")
+        bot_app.send_message(int(chatid),"Perfect! it is always nice to know my friends better. You can add your email and/or your name. To add info follow the following form:\n\n info: \n email:email@example.com \n name:Joe Smith")
 
     elif email == "" and name != "":
-        bot_app.send_message(int(chatid),"Seems like You added a name but not an email. To it info follow the following form:\n\n info: \n name:Joe Smith")
+        bot_app.send_message(int(chatid),"Seems like You added your name but not your email. To it info follow the following form:\n\n info: \n name:Joe Smith")
 
     elif email != "" and name == "":
-        bot_app.send_message(int(chatid),"Seems like You added an email but not a name. To add it follow the following form:\n\n info: \n email:email@example.com")
+        bot_app.send_message(int(chatid),"Seems like You added your email but not your name. To add it follow the following form:\n\n info: \n email:email@example.com")
     elif email != "" and name != "":
-        bot_app.send_message(int(chatid),"Seems like You added an email and name. To update your info follow the following form:\n\n info: \n email:email@example.com")
+        bot_app.send_message(int(chatid),"Seems like You added your email and name. To update your info follow the following form:\n\n info: \n email:email@example.com")
 
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
