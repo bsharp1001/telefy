@@ -1,6 +1,6 @@
 from pyrogram import Client, MessageHandler, Message
 import psycopg2
-from flask import Flask, render_template, request, g, redirect, url_for
+from flask import Flask, render_template, request, g, redirect, url_for, abort
 import os
 from os import path
 import urllib.request as req
@@ -25,11 +25,6 @@ app = Flask(__name__)
 app.config.from_mapping(
         SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key'
     )
-'''if path.exists(DATABASE) == False:
-    db = psycopg2.connect(DATABASE)
-    c = db.cursor()
-    c.execute('CREATE TABLE users (username text PRIMARY KEY NOT NULL, email text, name text, chatid text)')
-    db.commit()'''
 
 class UserChannelEmailNameForm(Form):
     user = StringField('Username*:', validators=[DataRequired()], _name="user")
@@ -89,13 +84,29 @@ bot_app = Client(
 )
 bot_app.start()
 
+def opt_in(username, chatid):
+    cmd = "INSERT INTO users (username, chatid) VALUES (%s,%s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
+    res = query_db(cmd, [username, chatid, chatid], True)
+    bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
+
+def opt_out():
+
+def add_info():
+def check_info():
+
 def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
-        cmd = "INSERT INTO users (username, chatid) VALUES (%s,%s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
         username = mes.chat.username
         chatid = mes.chat.id
-        res = query_db(cmd, [username, chatid, chatid], True)
-        bot_app.send_message(int(chatid),"hello there, welcome to telefy. I'll be your personal Notification bot, if the channel you specified made any new announcement, I'll notify you in no time. cheers "+u'\U0001F601')
+        if mes.text == "/opt_in":
+            username = mes.chat.username
+            opt_in(username, chatid)
+        elif mes.text == "/add_info":
+            check_info()
+            bot_app.send_message(int(chatid),"")
+        elif mes.text == "/opt_out":
+            bot_app.send_message(int(chatid),"Goodbyes hve always been hard "+u'\U0001F601'+". As you wish, you will stop receiving notifications from me")
+            opt_out(username)
 
 handlr = MessageHandler(on_confirm_messeage_recieve)
 bot_app.add_handler(handlr)
@@ -140,11 +151,12 @@ def close_connection(exception):
 
 @app.route('/')
 def enter():
+    abort(410)
     return redirect(url_for('register'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    
+    abort(410)
     form = UserChannelEmailNameForm()
     if form.validate_on_submit():
         username = form.user.data.replace("@","")
@@ -156,6 +168,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    abort(410)
     form = UserForm()
     if form.validate_on_submit():
         username = form.user.data
@@ -165,6 +178,7 @@ def login():
 
 @app.route('/dashboard/<q>')
 def dashboard(q):
+    abort(410)
     if q == "0":
         return render_template("dashboard.html", mes="Great! Everything done. Whenever new announcements are pulished on the channel specified, our bot will notify you.")
     else:
