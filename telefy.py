@@ -139,6 +139,8 @@ def on_confirm_messeage_recieve(client, mes):
     with app.app_context():
         username = mes.chat.username
         print(mes.text)
+        if mes.text.find("info:") != -1:
+            print("yes")
         if username is None:
             username = "no username"
         chatid = mes.chat.id
