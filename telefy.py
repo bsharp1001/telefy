@@ -76,8 +76,8 @@ bot_app.start()
 
 def opt_in(username, chatid):
     
-    cmd = "INSERT INTO users (username, chatid, email, name) VALUES (%s, %s, %s, %s) ON CONFLICT (username) DO UPDATE SET chatid=%s"
-    res = query_db(cmd, [username, chatid, "", "", chatid], True)
+    cmd = "INSERT INTO users (username, chatid, email, name) VALUES (%s, %s, %s, %s)"
+    res = query_db(cmd, [username, chatid, "", ""], True)
     bot_app.send_message(int(chatid),"Great, a new friend. Always nice to have new friend, welcome. If you care to tell me more info about you type \n /add_info")
 
 def opt_out(username, chatid):
